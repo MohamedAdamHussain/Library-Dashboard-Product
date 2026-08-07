@@ -1,0 +1,82 @@
+import { Component, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+
+interface Props {
+  children: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+
+export class ErrorBoundary extends Component<Props, State> {
+  override state: State = { hasError: false };
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  override componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error("ErrorBoundary caught:", error, info);
+  }
+
+  handleReset = () => {
+    this.setState({ hasError: false, error: undefined });
+    window.location.reload();
+  };
+
+  override render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          className="flex min-h-screen items-center justify-center p-6"
+          dir="rtl"
+        >
+          <div className="max-w-md text-center">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+              <svg
+                className="h-10 w-10"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                />
+              </svg>
+            </div>
+            <h1 className="mb-2 text-2xl font-bold text-foreground">
+              حدث خطأ غير متوقع
+            </h1>
+            <p className="mb-6 text-muted-foreground">
+              نعتذر عن هذا الخطأ. يمكنك المحاولة مرة أخرى أو تحديث الصفحة.
+            </p>
+            {import.meta.env.DEV && this.state.error && (
+              <details className="mb-4 text-right">
+                <summary className="cursor-pointer text-sm text-muted-foreground">
+                  تفاصيل الخطأ (للديباج)
+                </summary>
+                <pre
+                  className="mt-2 overflow-auto rounded-lg bg-muted p-3 text-left text-xs"
+                  dir="ltr"
+                >
+                  {this.state.error.message}
+                  {this.state.error.stack}
+                </pre>
+              </details>
+            )}
+            <Button onClick={this.handleReset} size="lg">
+              تحديث الصفحة
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
