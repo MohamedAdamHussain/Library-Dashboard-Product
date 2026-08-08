@@ -1,4 +1,3 @@
-import * as React from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Eye, ShoppingCart } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
